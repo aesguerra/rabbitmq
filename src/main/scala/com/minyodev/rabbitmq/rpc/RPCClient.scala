@@ -14,6 +14,8 @@ import java.util.concurrent.TimeoutException
 
 import com.rabbitmq.client.AMQP.BasicProperties
 
+import scala.util.Random
+
 object RPCClient {
 
   val requestQueueName = "rpc_queue"
@@ -35,9 +37,7 @@ object RPCClient {
       .replyTo(replyQueueName)
       .build()
 
-    val message = "qwe"
-    println("sending message: " + message)
-    channel.basicPublish("", requestQueueName, props, message.getBytes("UTF-8"))
+
 
     val response = new ArrayBlockingQueue[String](1)
 
@@ -49,6 +49,18 @@ object RPCClient {
         }
       }
     })
+
+    while(true) {
+      val message = UUID.randomUUID().toString
+      println("sending message: " + message)
+      channel.basicPublish("", requestQueueName, props, message.getBytes("UTF-8"))
+
+      val message2 = UUID.randomUUID().toString
+      println("sending message: " + message2)
+      channel.basicPublish("", requestQueueName, props, message2.getBytes("UTF-8"))
+
+      Thread.sleep(10000)
+    }
 
     response.take()
     channel.close()

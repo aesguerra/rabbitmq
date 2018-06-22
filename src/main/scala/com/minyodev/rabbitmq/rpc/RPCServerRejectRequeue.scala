@@ -2,7 +2,7 @@ package com.minyodev.rabbitmq.rpc
 
 import com.rabbitmq.client.{AMQP, ConnectionFactory, DefaultConsumer, Envelope}
 
-object RPCServer2 {
+object RPCServerRejectRequeue {
   def main(args: Array[String]): Unit = {
     val factory = new ConnectionFactory()
     factory.setHost("localhost")
@@ -21,7 +21,7 @@ object RPCServer2 {
       override def handleDelivery(consumerTag: String, envelope: Envelope, props: AMQP.BasicProperties, body: Array[Byte]): Unit = {
         val message = new String(body, "UTF-8")
         println("---------------------------------------------")
-        println("[x] Received '" + message + "' to be rejected")
+        println("[x] Received '" + message + "' to be rejected but requeue")
         println("[x] Reply to '" + props.getReplyTo + "'")
         channel.basicReject(envelope.getDeliveryTag, true)
         println("[x] Sent!")
