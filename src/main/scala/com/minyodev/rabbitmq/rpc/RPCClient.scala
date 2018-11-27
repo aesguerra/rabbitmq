@@ -37,14 +37,13 @@ object RPCClient {
       .replyTo(replyQueueName)
       .build()
 
-
-
     val response = new ArrayBlockingQueue[String](1)
 
     channel.basicConsume(replyQueueName, true, new DefaultConsumer(channel) {
       @throws[IOException]
       override def handleDelivery(consumerTag: String, envelope: Envelope, properties: BasicProperties, body: Array[Byte]): Unit = {
         if(properties.getCorrelationId.equals(corrId)) {
+          println(">> " + new String(body, "UTF-8"))
           response.offer(new String(body, "UTF-8"))
         }
       }
